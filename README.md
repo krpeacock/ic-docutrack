@@ -18,7 +18,9 @@ And in another terminal"
 
 ```
 # Install needed frontend dependencies.
-npm install
+npm install -g pnpm
+pnpm install
+
 
 # Deploy the canisters.
 dfx deploy
