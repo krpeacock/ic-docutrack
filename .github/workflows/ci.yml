@@ -11,12 +11,11 @@ on:
   pull_request:
 
 jobs:
-
   cargo-build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-22.04 ]
+        os: [ubuntu-22.04]
 
     steps:
       - uses: actions/checkout@v3
@@ -46,7 +45,7 @@ jobs:
     needs: cargo-build
     strategy:
       matrix:
-        os: [ ubuntu-22.04 ]
+        os: [ubuntu-22.04]
 
     steps:
       - uses: actions/checkout@v3
@@ -119,11 +118,11 @@ jobs:
     name: ShellCheck
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
-    - name: Run ShellCheck
-      uses: ludeeus/action-shellcheck@master
-      env:
-        SHELLCHECK_OPTS: -e SC1090 -e SC2119 -e SC1091
+      - uses: actions/checkout@v3
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: -e SC1090 -e SC2119 -e SC1091
 
   frontent-build:
     runs-on: ubuntu-22.04
@@ -152,4 +151,5 @@ jobs:
           dfx start --background
           dfx canister create --all
           dfx deploy internet_identity
-          npm run build
+          npm i -g pnpm
+          pnpm run build
