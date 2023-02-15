@@ -4,6 +4,9 @@
     "frontend"
   ],
   "scripts": {
-    "build": "npm run build --workspace frontend"
+    "build": "pnpm run build --workspace frontend"
+  },
+  "devDependencies": {
+    "pnpm": "^7.27.0"
   }
 }
