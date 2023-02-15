@@ -1,6 +1,8 @@
 import inject from "@rollup/plugin-inject";
 import { sveltekit } from "@sveltejs/kit/vite";
 import { readFileSync } from "fs";
+import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
+import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
 import { join } from "path";
 import type { UserConfig } from "vite";
 import { defineConfig, loadEnv } from "vite";
@@ -50,14 +52,7 @@ const config: UserConfig = {
   plugins: [sveltekit()],
   build: {
     target: "es2020",
-    rollupOptions: {
-      // Polyfill Buffer for production build
-      plugins: [
-        inject({
-          modules: { Buffer: ["buffer", "Buffer"] },
-        }),
-      ],
-    },
+    rollupOptions: {},
   },
   optimizeDeps: {
     esbuildOptions: {

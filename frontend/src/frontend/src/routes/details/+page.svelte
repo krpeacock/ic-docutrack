@@ -3,13 +3,13 @@
   import { onMount } from "svelte";
   import FilePreview from "$lib/components/FilePreview.svelte";
   import File from "$lib/file";
-  import { Buffer } from "buffer";
   import { Alert } from "sveltestrap";
   import Details from "$lib/components/Details.svelte";
   import {
     actor,
     isAuthenticated,
   } from "$lib/shared/stores/auth.js";
+  import { arrayBufferToBase64 } from "$lib/buffer";
 
   const fileId = parseInt($page.url.searchParams.get("fileId") || "");
 
@@ -47,7 +47,7 @@
             downloadedFile.found_file.owner_key.buffer
           );
           file.dataType = downloadedFile.found_file.file_type;
-          file.data = Buffer.from(decryptedFile.contents).toString("base64");
+          file.data = arrayBufferToBase64( decryptedFile.contents);
         }
       }
     }

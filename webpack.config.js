@@ -43,7 +43,10 @@ function initCanisterIds() {
 }
 initCanisterIds();
 
-const index_html = path.join(__dirname, path.join("frontend", "src", "index.html"));
+const index_html = path.join(
+  __dirname,
+  path.join("frontend", "src", "index.html")
+);
 const index_js = path.join(__dirname, path.join("frontend", "src", "index.js"));
 
 module.exports = {
@@ -67,10 +70,6 @@ module.exports = {
       BACKEND_CANISTER_ID: process.env.BACKEND_CANISTER_ID,
       II_CANISTER_ID: process.env.INTERNET_IDENTITY_CANISTER_ID,
       DFX_NETWORK: process.env.DFX_NETWORK || "local",
-    }),
-    new webpack.ProvidePlugin({
-      Buffer: [require.resolve("buffer/"), "Buffer"],
-      process: require.resolve("process/browser"),
     }),
   ],
 
