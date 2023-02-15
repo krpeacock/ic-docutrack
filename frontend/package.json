@@ -1,5 +1,5 @@
 {
-  "name": "sveltekit-starter",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "description": "Internet Computer SvelteKit starter application",
@@ -22,6 +22,8 @@
   },
   "devDependencies": {
     "@dfinity/identity": "0.15.3",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@rollup/plugin-inject": "^5.0.2",
     "@sveltejs/adapter-static": "^1.0.0-next.48",
     "@sveltejs/kit": "^1.0.0-next.144",

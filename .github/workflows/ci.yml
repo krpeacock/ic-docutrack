@@ -151,5 +151,5 @@ jobs:
           dfx start --background
           dfx canister create --all
           dfx deploy internet_identity
-          npm i -g pnpm
-          pnpm run build
+          npm install
+          npm run build
