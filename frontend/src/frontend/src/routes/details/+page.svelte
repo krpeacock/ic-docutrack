@@ -16,6 +16,7 @@
   let actorValue;
   let isAuthenticatedValue;;
   let fileNotFound = false;
+  let download = "";
   let file = {
     name: "",
     dataType: "",
@@ -29,6 +30,7 @@
   onMount(async () => {
     if (isAuthenticatedValue) {
       let files = await actorValue.get_requests();
+      files = files.concat(await actorValue.get_shared_files());
       files.every((entry) => {
         if (entry.file_id == BigInt(fileId)) {
           file.name = entry.file_name;
@@ -48,6 +50,7 @@
           );
           file.dataType = downloadedFile.found_file.file_type;
           file.data = arrayBufferToBase64( decryptedFile.contents);
+          download = `data:${file.dataType};base64,${file.data}`
         }
       }
     }
@@ -64,6 +67,8 @@
     <Details {file} />
     {#if file && file.data}
       <h4>File Preview</h4>
+      <a class="btn btn-primary" href={download} download={file.name}>Download</a>
+      <p></p>
       <FilePreview {file} />
     {/if}
   {:else if fileNotFound}

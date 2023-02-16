@@ -6,12 +6,17 @@
     isAuthenticated,
   } from "$lib/shared/stores/auth.js";
   import ContentTable from "$lib/components/ContentTable.svelte";
+  import ShareModal from "$lib/components/ShareModal.svelte";
 
   let data = null;
+  let fileData = {file_id: null, file_name: '', shared_with:[]};
   let tableColumns = [
     { key: "name", label: "Name" },
     { key: "access", label: "Access" },
+    { key: "uploadedAt", label: "Uploaded At" },
   ];
+  let isOpenShareModal = false;
+  let shareFileData = null;
   let actorValue;
   let isAuthenticatedValue;
 
@@ -22,19 +27,51 @@
     isAuthenticatedValue = value;
   });
 
+  async function openShareModal(file_id) {
+    if(fileData && fileData.length > 0){
+    shareFileData = fileData.find(obj => {return obj.file_id === file_id});
+    if(shareFileData) {
+      isOpenShareModal = true;
+    }
+  }
+  }
+
   async function syncBackend(backend) {
     if (backend) {
-      const fileData = await actorValue.get_requests();
+      let requestData = await actorValue.get_requests();
+      let sharedData = await actorValue.get_shared_files();
+      fileData = requestData.concat(sharedData);
       let newData = [];
       // Prepare data for page template
       for (let idx = 0; idx < fileData.length; ++idx) {
-        let detailsLink = new URL($page.url.origin + "/details");
-        detailsLink.searchParams.append("fileId", fileData[idx].file_id);
-        newData.push({
-          name: fileData[idx].file_name,
-          access: "Only You",
-          items: [{ url: detailsLink, text: "Open" }],
-        });
+        if (!fileData[idx].file_status.pending) {
+          // Determine the sharing status
+          let nShared = fileData[idx].shared_with ? fileData[idx].shared_with.length : 0;
+          let accessMessage = '';
+          switch (nShared) {
+            case 0:
+              accessMessage = 'Only You';
+              break;
+            case 1:
+              accessMessage = '1 other Person';
+              break;
+            default:
+              accessMessage = nShared + ' other People'
+          }
+          let detailsLink = new URL($page.url.origin + "/details");
+          detailsLink.searchParams.append("fileId", fileData[idx].file_id);
+          const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timezone: 'CET', hour12: false };
+          let uploadedAt = new Date(Math.floor(Number(fileData[idx].file_status.uploaded.uploaded_at) / 1000000));
+          newData.push({
+            name: fileData[idx].file_name,
+            access: accessMessage,
+            uploadedAt: uploadedAt.toLocaleTimeString("en-CH", dateOptions),
+            items: [
+              { url: detailsLink, text: "Open" },
+              { onClick: () => {openShareModal(fileData[idx].file_id)}, text: "Share" }
+          ],
+          });
+        }
       }
       // Assign `data` to itself for reactivity purposes
       data = newData;
@@ -60,6 +97,7 @@
 </svelte:head>
 
 <section>
+<ShareModal bind:isOpen={isOpenShareModal} bind:fileData={shareFileData}/>
   {#if isAuthenticatedValue === null || data === null}
     <h3>Loading...</h3>
   {:else if isAuthenticatedValue}

@@ -2,13 +2,7 @@ use backend::api::UploadFileAtomicRequest;
 use backend::*;
 use ic_cdk::api::caller;
 use ic_cdk::export::candid::Principal;
-use ic_cdk_macros::query;
-use ic_cdk_macros::update;
-
-#[query]
-fn hello_world() -> String {
-    format!("Hello {}!", ic_cdk::api::caller())
-}
+use ic_cdk_macros::{post_upgrade, pre_upgrade, query, update};
 
 #[update]
 fn set_user(user: User) {
@@ -77,9 +71,32 @@ fn share_file(
     })
 }
 
+#[update]
+fn share_file_with_users(
+    user_id: Vec<Principal>,
+    file_id: u64,
+    file_key_encrypted_for_user: Vec<Vec<u8>>,
+) {
+    with_state_mut(|s| {
+        for (id, key) in user_id.iter().zip(file_key_encrypted_for_user.iter()) {
+            backend::api::share_file(s, caller(), *id, file_id, key.clone());
+        }
+    });
+}
+
 #[query]
 fn get_users() -> GetUsersResponse {
     with_state(|s| backend::api::get_users(s, caller()))
+}
+
+#[pre_upgrade]
+fn pre_upgrade() {
+    backend::pre_upgrade();
+}
+
+#[post_upgrade]
+fn post_upgrade() {
+    backend::post_upgrade();
 }
 
 fn main() {}
